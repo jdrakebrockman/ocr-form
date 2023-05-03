@@ -63,14 +63,7 @@
 			{/if}
 		</div>
 	</article>
-	{#if files}
-		<article>
-			<h2>Selected files:</h2>
-			{#each Array.from(files) as file}
-				<p>{file.name} ({file.size} bytes)</p>
-			{/each}
-		</article>
-	{/if}
+
 	{#if response}
 		<article>
 			<h2>OCR content:</h2>
