@@ -13,7 +13,7 @@
 			data.append('file', files[0], files[0].name);
 
 			axios
-				.post('http://localhost:3000/ocr', data, {
+				.post('http://localhost:3000/ocr/id', data, {
 					headers: {
 						accept: 'application/json',
 						'Accept-Language': 'en-US,en;q=0.8',
