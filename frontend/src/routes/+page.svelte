@@ -3,16 +3,9 @@
 
 	let files: FileList;
 	let response: string;
-
-	$: if (files) {
-		// Note that `files` is of type `FileList`, not an Array:
-		// https://developer.mozilla.org/en-US/docs/Web/API/FileList
-		console.log(files);
-
-		for (const file of files) {
-			console.log(`${file.name}: ${file.size} bytes`);
-		}
-	}
+	let image: any;
+	let placeholder;
+	let showImage = false;
 
 	function validate() {
 		if (files[0]) {
@@ -35,21 +28,78 @@
 				});
 		}
 	}
+
+	function onChange() {
+		const file = files[0];
+
+		if (file) {
+			showImage = true;
+
+			const reader = new FileReader();
+			reader.addEventListener('load', function () {
+				image.setAttribute('src', reader.result);
+			});
+			reader.readAsDataURL(file);
+
+			return;
+		}
+		showImage = false;
+	}
 </script>
 
-<form on:submit|preventDefault={validate}>
-	<label for="many">Upload file of any type:</label>
-	<input bind:files id="many" type="file" />
-	<button type="submit"> Please save me </button>
-</form>
+<main class="container">
+	<article class="flex">
+		<form on:submit|preventDefault={validate}>
+			<label for="many">Upload file of any type:</label>
+			<input bind:files on:change={onChange} id="many" type="file" />
+			<button type="submit"> Please save me </button>
+		</form>
 
-{#if files}
-	<h2>Selected files:</h2>
-	{#each Array.from(files) as file}
-		<p>{file.name} ({file.size} bytes)</p>
-	{/each}
-{/if}
+		<div>
+			{#if showImage}
+				<img bind:this={image} src="" alt="Preview" />
+			{:else}
+				<span bind:this={placeholder}>Image Preview</span>
+			{/if}
+		</div>
+	</article>
+	{#if files}
+		<article>
+			<h2>Selected files:</h2>
+			{#each Array.from(files) as file}
+				<p>{file.name} ({file.size} bytes)</p>
+			{/each}
+		</article>
+	{/if}
+	{#if response}
+		<article>
+			<h2>OCR content:</h2>
 
-{#if response}
-	{response}
-{/if}
+			{response}
+		</article>
+	{/if}
+</main>
+
+<style lang="css">
+	.flex {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 32px;
+	}
+
+	.flex > div {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 200px;
+		flex: 1 1 0px;
+		border: dashed 1px var(--form-element-color);
+	}
+
+	.flex > form {
+		width: 100%;
+		flex: 1 1 0px;
+	}
+</style>
